@@ -36,8 +36,7 @@ FROM ubuntu:22.04
 # Set the working directory
 WORKDIR /app
 
-# Copy the requirements and application files to the working directory
-COPY requirements.txt /app
+# Copy the devops directory into the container
 COPY devops /app
 
 # Install Python, pip, and other necessary tools
@@ -52,9 +51,9 @@ RUN /app/venv/bin/pip install --upgrade pip && \
 # Ensure the virtual environment is activated when the container starts
 ENV PATH="/app/venv/bin:$PATH"
 
-# Expose port 8000 for Django development server
+# Expose port 8000 for the Django development server
 EXPOSE 8000
 
 # Set the entrypoint and default command to run Django server
 ENTRYPOINT ["python3"]
-CMD ["devops/manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["/app/manage.py", "runserver", "0.0.0.0:8000"]
