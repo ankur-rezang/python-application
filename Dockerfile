@@ -45,17 +45,26 @@
 # CMD ["manage.py", "runserver", "0.0.0.0:8000"]
 
 
-FROM amazonlinux:2
+# Start with the Ubuntu base image
+FROM ubuntu:latest
 
+# Set the working directory
 WORKDIR /app
 
+# Copy your requirements.txt to the working directory
 COPY requirements.txt /app
-COPY devops /app
 
-RUN yum update -y && \
-    yum install -y python3 python3-pip && \
-    pip3 install -r requirements.txt && \
-    cd devops
+# Copy the devops directory into the container
+COPY devops /app/devops
 
+# Update and install necessary packages
+RUN apt-get update -y && \
+    apt-get install -y python3 python3-pip && \
+    pip3 install -r requirements.txt
+
+# Set the working directory to the devops folder
+WORKDIR /app/devops
+
+# Set the entrypoint and command to run your app
 ENTRYPOINT ["python3"]
 CMD ["manage.py", "runserver", "0.0.0.0:8000"]
