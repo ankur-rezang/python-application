@@ -29,42 +29,31 @@
 
 
 
-# FROM ubuntu
+# Use Ubuntu 22.04 as the base image
+FROM ubuntu:22.04
 
-# WORKDIR /app
-
-# COPY requirements.txt /app
-# COPY devops /app
-
-# RUN apt-get update && \
-#     apt-get install -y python3 python3-pip && \
-#     pip install -r requirements.txt && \
-#     cd devops
-
-# ENTRYPOINT ["python3"]
-# CMD ["manage.py", "runserver", "0.0.0.0:8000"]
-
-
-# Start with the Ubuntu base image
-FROM ubuntu:latest
-
-# Set the working directory
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy your requirements.txt to the working directory
+# Copy the requirements and application files to the container
 COPY requirements.txt /app
-
-# Copy the devops directory into the container
 COPY devops /app/devops
 
-# Update and install necessary packages
-RUN apt-get update -y && \
-    apt-get install -y python3 python3-pip && \
-    pip3 install -r requirements.txt
+# Install Python, pip, and other necessary tools
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip python3-venv
 
-# Set the working directory to the devops folder
-WORKDIR /app/devops
+# Create a virtual environment and install dependencies
+RUN python3 -m venv /app/venv && \
+    /app/venv/bin/pip install --upgrade pip && \
+    /app/venv/bin/pip install -r /app/requirements.txt
 
-# Set the entrypoint and command to run your app
+# Ensure the virtual environment is activated when the container starts
+ENV PATH="/app/venv/bin:$PATH"
+
+# Expose port 8000 for the Django development server
+EXPOSE 8000
+
+# Set the entrypoint and default command to run the Django server
 ENTRYPOINT ["python3"]
-CMD ["manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["/app/devops/manage.py", "runserver", "0.0.0.0:8000"]
