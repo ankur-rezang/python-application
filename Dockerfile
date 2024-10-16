@@ -36,8 +36,9 @@ FROM ubuntu:22.04
 WORKDIR /app
 
 # Copy the requirements and application files to the container
-COPY requirements.txt /app
-COPY devops /app/devops
+COPY requirements.txt /app/
+COPY manage.py /app/  # Copy manage.py to the root of /app
+COPY devops /app/devops/  # Copy the devops directory
 
 # Install Python, pip, and other necessary tools
 RUN apt-get update && \
@@ -56,4 +57,5 @@ EXPOSE 8000
 
 # Set the entrypoint and default command to run the Django server
 ENTRYPOINT ["python3"]
-CMD ["/app/devops/manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["manage.py", "runserver", "0.0.0.0:8000"]
+
